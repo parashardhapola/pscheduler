@@ -1,0 +1,144 @@
+#!/usr/bin/env python
+
+import imp
+import glob
+import time
+import os
+import datetime
+from subprocess import Popen, PIPE
+import json
+from collections import OrderedDict
+
+
+class pdaemon():
+    def __init__(self, blacklist_hosts, sleeptime=10):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.pendLoc = os.path.join(self.path, 'jobs', 'PEND')
+        self.runLoc = os.path.join(self.path, 'jobs', 'RUN')
+        self.finLoc = os.path.join(self.path, 'jobs', 'FINISH')
+        self.scriptLoc = os.path.join(self.path, 'jobs', 'SUBSCRIPTS')
+        self.sleepTime = sleeptime
+        self.run()
+
+    def update_hosts(self):
+        phosts = imp.load_source('phosts', self.path + '/phosts')
+        return phosts.phosts(blacklist_hosts=blacklist_hosts,
+                             verbose=False).availableCores
+
+    def acquire_jobs(self):
+        json_files = glob.glob("%s/*.json" % self.pendLoc)
+        return json_files
+
+    def get_timestamp(self):
+        return '{:%Y-%m-%d %H:%M:%S}'.format(
+            datetime.datetime.now())
+
+    def submit_job(self, host, fn):
+        jobinfo = json.load(open(fn), object_pairs_hook=OrderedDict)
+        uid = fn.split('/')[-1].split('.')[0]
+
+        script = "#!/bin/bash\necho $$;\n%s\n" % jobinfo['CMD']
+        script_file = "%s/%s" % (self.scriptLoc, uid)
+        with open(script_file, 'w') as OUT:
+            OUT.write(script)
+        os.system("chmod 777 %s" % script_file)
+
+        runfn = "%s/%s.json" % (self.runLoc, uid)
+        jobinfo['RUNHOST'] = host
+        jobinfo['BEGTIME'] = self.get_timestamp()
+        with open(runfn, 'w') as OUT:
+            json.dump(jobinfo, OUT, indent=2)
+        os.system("rm %s" % fn)
+
+        logfn = "%s/%s.log" % (self.runLoc, uid)
+        sub = "ssh %s nohup %s </dev/null > %s 2>&1 &" % (
+            host, script_file, logfn)
+        os.system(sub)
+        print ("%s: %s job submitted" % (
+            self.get_timestamp(), jobinfo['NAME']))
+
+        return True
+
+    def launch_subprocess(self, cmd_list, sleep=0):
+        time.sleep(sleep)
+        process = Popen(cmd_list, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate()
+        return stderr.decode('utf8'), stdout.decode('utf8')
+
+    def clean_jobs(self):
+        submitted_jobs = glob.glob("%s/*.json" % self.runLoc)
+        print ("%s: %d jobs in RUN dir" % (
+            self.get_timestamp(), len(submitted_jobs)))
+        for runfn in submitted_jobs:
+            uid = runfn.split('/')[-1].split('.')[0]
+            logfn = "%s/%s.log" % (self.runLoc, uid)
+            if os.path.isfile(logfn):
+                try:
+                    data = open(logfn).readlines()
+                    pid = data[0].rstrip('\n')
+                    print (pid)
+                except:
+                    continue
+                jobinfo = json.load(open(runfn))
+                check_cmd = ['ssh', jobinfo['RUNHOST'], "ps x | grep %s" % pid]
+                err, out = self.launch_subprocess(check_cmd)
+                complete = True
+                for l in out.split('\n'):
+                    if l.rstrip('\n').split(' ')[0] == pid:
+                        complete = False
+                        break
+                if complete is True:
+                    try:
+                        output = data[1:]
+                    except:
+                        output = ''
+
+                    script_file = "%s/%s" % (self.scriptLoc, uid)
+                    os.system("rm %s %s %s" % (script_file, logfn, runfn))
+
+                    jobinfo['OUTPUT'] = output
+                    jobinfo['FINTIME'] = self.get_timestamp()
+                    with open("%s/%s.log" % (jobinfo['OUTLOC'].rstrip('/'),
+                                             jobinfo['NAME']), 'w') as OUT:
+                        json.dump(jobinfo, OUT, indent=2)
+                    print ("%s: Job %s completed" % (
+                        self.get_timestamp(), jobinfo['NAME']))
+        return True
+
+    def run(self):
+        while True:
+            jobfiles = self.acquire_jobs()
+            if len(jobfiles) > 0:
+                print ("%s: %d job files found" % (
+                    self.get_timestamp(), len(jobfiles)))
+                print ("%s: Updating hosts core info" %
+                       self.get_timestamp())
+                hosts = self.update_hosts()
+                for host in hosts:
+                    if len(jobfiles) == 0:
+                        print ("%s: No outstanding jobs found." %
+                               self.get_timestamp())
+                        break
+                    cores = int(hosts[host])
+                    print ("%s: %s has %d free cores" %
+                           (self.get_timestamp(), host, cores))
+                    # Check if enough cores available
+                    if cores / 1.5 > json.load(open(jobfiles[0]))['NUMPROC']:
+                        self.submit_job(host, jobfiles[0])
+                        if len(jobfiles) == 1:
+                            jobfiles = []
+                        else:
+                            # remove submitted job from queue
+                            jobfiles = jobfiles[1:]
+            self.clean_jobs()
+            if len(jobfiles) == 0:
+                print ("%s: Sleeping" % self.get_timestamp())
+                time.sleep(self.sleepTime)
+            else:  # deprioritize first job
+                jobfiles = jobfiles[1:] + jobfiles[:1]
+        return None
+
+
+if __name__ == "__main__":
+    blacklist_hosts = ['hpc', 'gpu0']
+    p = pdaemon(blacklist_hosts=blacklist_hosts)
