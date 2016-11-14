@@ -62,7 +62,7 @@ class phosts():
         checkcpu_script = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), 'checkCPUusage.py')
         err, out = self.launch_subprocess([
-            'ssh', host, checkcpu_script
+            'ssh', host, 'python', checkcpu_script
         ])
         if err == '':
             return True, out.rstrip('\n')

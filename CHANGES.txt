@@ -1,0 +1,13 @@
+0.0.1:
+	FIRST PRE ALPHA RELEASE
+0.0.2:
+	CLI CREATED using wrapper.py
+	BHOST wrapper script separated form phosts module
+	Introduced hosts.cfg: A user editable list of hosts
+	Batch script made for creating login keys
+	PSUB now saves in JSON format
+	DEV: Submit to PyPi using python script
+	DEV: Automatic update of version in setup.py
+0.0.3:
+	NOT released
+
