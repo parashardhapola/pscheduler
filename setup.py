@@ -29,6 +29,7 @@ setup(
     install_requires=['psutil'],
     packages=find_packages(),
     include_package_data=True,
-    scripts=['./scripts/batch_setup_login_keys.py',
-             './scripts/bhostsWrapper.py'],
+    scripts=['./scripts/batchSetupLoginKeys.py',
+             './scripts/bhostsWrapper.py',
+             './scripts/pscheduler'],
 )
