@@ -1,5 +1,5 @@
 import glob
-from phosts import phosts
+from pscheduler import phosts
 import time
 import os
 import datetime
@@ -19,7 +19,7 @@ class pdaemon():
         self.run()
 
     def update_hosts(self):
-        return phosts(verbose=False).availableCores
+        return phosts.phosts(verbose=False).availableCores
 
     def acquire_jobs(self):
         json_files = glob.glob("%s/*.json" % self.locations['PEND'])

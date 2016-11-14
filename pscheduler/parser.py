@@ -1,7 +1,6 @@
 from os.path import expanduser, join, isdir, isfile, dirname, realpath
 from os import makedirs, system
-from phosts import phosts
-from psub import psub
+from pscheduler import phosts, psub
 import sys
 import argparse
 
@@ -75,13 +74,14 @@ NOTE: Ensure that job string is within quotes
         parser.add_argument("--processes", "-n", type=int, default=1)
         parser.add_argument('job')
         args = parser.parse_args(sys.argv[2:])
-        psub(args.job, args.name, args.outlog, args.processes, self.jobdirPath)
+        psub.psub(args.job, args.name, args.outlog,
+                  args.processes, self.jobdirPath)
 
     def jobs(self):
         pass
 
     def hosts(self):
-        p = phosts()
+        p = phosts.phosts()
         print ("%d hosts found" % len(p.hostNames), flush=True)
         print ("%d hosts online" % len(p.onlineHosts), flush=True)
         for host in p.onlineHosts:
