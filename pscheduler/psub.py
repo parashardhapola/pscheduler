@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os
 import datetime
 import uuid
@@ -8,14 +6,13 @@ from collections import OrderedDict
 
 
 class psub():
-    def __init__(self, cmd, name=None, outloc=None, proc=1):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.pendLoc = os.path.join(self.path, 'jobs', 'PEND')
+    def __init__(self, cmd, name, outloc, proc, job_dir):
+        self.pendLoc = os.path.join(job_dir, 'PEND')
         uid = uuid.uuid1()
         if name is None:
             name = uid
         if outloc is None:
-            outloc = os.path.join(self.paxth, 'jobs', 'FINISH')
+            outloc = os.path.join(job_dir, 'FINISH')
         pend_dict = OrderedDict({
             'SUBTIME': self.get_timestamp(),
             'CWD': os.getcwd(),
@@ -30,7 +27,3 @@ class psub():
     def get_timestamp(self):
         return '{:%Y-%m-%d %H:%M:%S}'.format(
             datetime.datetime.now())
-
-
-if __name__ == "__main__":
-    p = psub('sleep 10', 'sleepjob', '/home/parashar')
