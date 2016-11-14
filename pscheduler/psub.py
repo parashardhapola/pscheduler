@@ -10,7 +10,7 @@ class psub():
         self.pendLoc = os.path.join(job_dir, 'PEND')
         uid = uuid.uuid1()
         if name is None:
-            name = uid
+            name = str(uid)
         if outloc is None:
             outloc = os.path.join(job_dir, 'FINISH')
         pend_dict = OrderedDict({
