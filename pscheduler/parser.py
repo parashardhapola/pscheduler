@@ -113,7 +113,3 @@ NOTE: Ensure that job string is within quotes
         if not isfile(host_file):
             open(join(home_dir, 'hosts.cfg'), 'w').close()
         return True
-
-
-if __name__ == "__main__":
-    Parser('.pscheduler')  # DO NOT CHANGE THIS VALUE AFTER STARTING SERVICE
