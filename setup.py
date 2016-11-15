@@ -1,31 +1,26 @@
 from setuptools import setup, find_packages
 
 version = open('VERSION').read()
-desc = 'A pure Python remote job scheduler system'
-url = 'https://github.com/parashardhapola/pscheduler/tarball/%s' % version
-classifiers = [
-    'Development Status :: 3 - Alpha',
-    'Environment :: Console',
-    'License :: OSI Approved :: MIT License',
-    'Natural Language :: English',
-    'Operating System :: POSIX :: Linux',
-    'Programming Language :: Python :: 3.5',
-    'Topic :: System :: Distributed Computing',
-    'Topic :: System :: Networking :: Monitoring'
-]
-
-
+git_loc = 'https://github.com/parashardhapola/pscheduler'
 setup(
     name='pscheduler',
     version=version,
-    description=desc,
+    description='A pure Python remote job scheduler system',
     author='Parashar Dhapola',
     author_email='parashar.dhapola@gmail.com',
-    url='https://github.com/parashardhapola/pscheduler',
-    download_url=url,
-    keywords=['scheduler'],
+    url=git_loc,
+    download_url='%s/tarball/%s' % (git_loc, version),
     license="MIT",
-    classifiers=classifiers,
+    categories=[
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: System :: Distributed Computing',
+        'Topic :: System :: Networking :: Monitoring'
+    ],
     install_requires=['psutil'],
     packages=find_packages(),
     include_package_data=True,
