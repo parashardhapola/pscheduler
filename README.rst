@@ -1,31 +1,42 @@
 pscheduler
 ==========
-A pure Python module for launching and monitoring jobs on remote machines
--------------------------------------------------------------------------
+
+.. image:: https://travis-ci.org/parashardhapola/pscheduler.svg?branch=master
+    :target: https://travis-ci.org/parashardhapola/pscheduler
+.. image:: https://img.shields.io/pypi/l/pscheduler.svg
+    :target: https://pypi.python.org/pypi/pscheduler
+.. image:: https://img.shields.io/pypi/v/pscheduler.svg
+    :target: https://pypi.python.org/pypi/pscheduler
+.. image:: https://img.shields.io/pypi/wheel/pscheduler.svg
+    :target: https://pypi.python.org/pypi/pscheduler
+.. image:: https://landscape.io/github/parashardhapola/pscheduler/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/parashardhapola/pscheduler/master
+   :alt: Code Health
+
 
 Setup
-^^^^^
+-----
 
 * This pscheduler service is critical dependent upon the usage of shred filesystem across the remote machines. Setup NFS for all the remote machines.
 * Have same login credentials for all the remote machines.
 * Basic Linux utilities like *ssh* and *nohup* should be installed on all the remote machines.
 
 Install
-^^^^^^^
+-------
 
 **pscheduler** is a Python 3 only module and can be easily installed using pip:
 
     ``pip install pscheduler``
 
 Configuration
-^^^^^^^^^^^^^
+-------------
 
 * Start the service using ``pscheduler service start``. This will create a directory **.pscheduler** under your home directory.
 * Edit file **~/.pscheduler/hosts.cfg** and add all the IP addresses/domain aliases of the remote machines in each line. Save and exit. Alternately if you are in an HPC environment and LSF is already installed, then you can use the provided script ``bhostsWrapper.py`` to directly populate the remote machine. You should then edit it to remove the head node machine from the list and any other required host.
 * If you have not already setup password-less login into remote machines, then use the provided script ``batchSetupLoginKeys.py`` to set it up. 
 
 Usage
-^^^^^
+-----
 
 * There are four basic utilities:
 
@@ -86,6 +97,6 @@ HISTORY
     * Not released
 	
 
-LICENSE
--------
-**MIT licensed. Copyright 2016 Parashar Dhapola**
+Contributors
+============
+Parashar Dhapola (parashar.dhapola@gmail.com)
