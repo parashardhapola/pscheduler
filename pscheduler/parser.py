@@ -119,7 +119,9 @@ NOTE: Ensure that job string is within quotes
                 cmds.append('ssh-keygen -t rsa -f %s -N ""' % rsa_file)
             cmds.append('cat %s.pub >> %s' % (rsa_file, keys_file))
             cmds.append('chmod og-wx %s' % keys_file)
-            cmds.append('ssh localhost exit')
+            options = '-o UserKnownHostsFile=/dev/null ' + \
+                '-o StrictHostKeyChecking=no'
+            cmds.append('ssh %s localhost exit' % options)
             temp_script_file = join(expanduser("~"),
                                     '.temp_keygen_script_file.bash')
             with open(temp_script_file, 'w') as OUT:

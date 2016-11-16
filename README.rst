@@ -17,7 +17,7 @@ pscheduler
 Setup
 -----
 
-* This pscheduler service is critical dependent upon the usage of shred filesystem across the remote machines. Setup NFS for all the remote machines.
+* This pscheduler service is critical dependent upon the usage of shared filesystem across the remote machines. Setup NFS for all the remote machines.
 * Have same login credentials for all the remote machines.
 * Basic Linux utilities like *ssh* and *nohup* should be installed on all the remote machines.
 
@@ -94,8 +94,15 @@ HISTORY
 * 0.0.6:
     * Json fix
 * 0.0.7:
-    * Not released
-	
+    * jobs subcommand implemented
+    * phosts doublehost check issue rectified
+    * submission process improved in daemon
+    * class naming convention changed
+    * default host fixed to localhost. passwordless loging into localhost created
+    * DEV: Travis CI now being used for testing
+* 0.0.8:
+	* NOT RELEASED
+
 
 Contributors
 ============
