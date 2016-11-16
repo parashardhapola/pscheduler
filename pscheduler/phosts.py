@@ -42,7 +42,7 @@ class Phosts():
         names = []
         try:
             names = [x.rstrip('\n') for x in open(hostfile).readlines()]
-        except:
+        except FileNotFoundError:
             print ('ERROR open hostfile %s' % hostfile, flush=True)
         return names
 

@@ -91,7 +91,7 @@ NOTE: Ensure that job string is within quotes
                 if not isdir(d):
                     try:
                         makedirs(d)
-                    except:
+                    except OSError:
                         print ('FATAL ERROR: Unable to create dir: %s' % d,
                                flush=True)
                         return False

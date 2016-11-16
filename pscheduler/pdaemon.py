@@ -73,7 +73,7 @@ class pdaemon():
                 try:
                     data = open(logfn).readlines()
                     pid = data[0].rstrip('\n')
-                except:
+                except (FileNotFoundError, IndexError):
                     continue
                 jobinfo = json.load(open(runfn))
                 check_cmd = ['ssh', jobinfo['RUNHOST'], "ps x | grep %s" % pid]
@@ -86,7 +86,7 @@ class pdaemon():
                 if complete is True:
                     try:
                         output = data[1:]
-                    except:
+                    except IndexError:
                         output = ''
 
                     script_file = "%s/%s.bash" % (self.locations['SUBSCRIPTS'],
@@ -145,7 +145,7 @@ class pdaemon():
 if __name__ == "__main__":
     try:
         jobs_dir = sys.argv[1]
-    except:
+    except IndexError:
         print ('Please provide jobs directory path to pdaemon', flush=True)
         exit(1)
     else:

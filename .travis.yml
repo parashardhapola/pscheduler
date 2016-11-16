@@ -1,10 +1,10 @@
 language: python
 python:
-  - "3.5"
+  - 3.5
 install: 
-  - "pip install ."
+  - pip install .
 script:
-  - pscheduler service start
-  - pscheduler hosts
-  - pscheduler jobs
-  - pscheduler sub "sleep 1"
+  - coverage run pscheduler service start
+  - coverage run pscheduler hosts
+  - coverage run pscheduler jobs
+  - coverage run pscheduler sub "sleep 1"
