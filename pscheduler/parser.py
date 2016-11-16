@@ -118,6 +118,6 @@ NOTE: Ensure that job string is within quotes
                 system('ssh-keygen -t rsa -f %s -N ""' % rsa_file)
             system('cat %s >> %s' % (rsa_file, keys_file))
             system('chmod og-wx %s' % keys_file)
-            system('cat %s' rsa_file)
-            system('cat %s' keys_file)
+            system('cat %s' % rsa_file)
+            system('cat %s' % keys_file)
         return True
