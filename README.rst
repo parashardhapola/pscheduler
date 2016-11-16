@@ -100,8 +100,8 @@ HISTORY
     * class naming convention changed
     * default host fixed to localhost. passwordless loging into localhost created
     * DEV: Travis CI now being used for testing
-* 0.0.8:
-	* NOT RELEASED
+* 0.1.0:
+	* Rolledback SSH keygen
 
 
 Contributors

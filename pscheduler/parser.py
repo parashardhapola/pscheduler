@@ -107,25 +107,30 @@ NOTE: Ensure that job string is within quotes
             return False
         host_file = join(home_dir, 'hosts.cfg')
         if not isfile(host_file):
-            with open(join(home_dir, 'hosts.cfg'), 'w') as OUT:
+            with open(host_file, 'w') as OUT:
                 OUT.write('localhost')
-            ssh_dir = join(expanduser("~"), '.ssh')
+            print ("INFO: Localhost added to %s" % host_file)
+            print ("INFO: Add host IP addresses to %s and remove localhost." %
+                   host_file)
+            print ("CRITICAL INFO: setup passwordless login for each host.")
+
+            # ssh_dir = join(expanduser("~"), '.ssh')
             # if not isdir(ssh_dir):
             #     makedirs(ssh_dir)
-            rsa_file = join(ssh_dir, 'id_rsa')
-            keys_file = join(ssh_dir, 'authorized_keys')
-            cmds = ['rm -rf %s' % ssh_dir]
-            if not isfile(rsa_file):
-                cmds.append('ssh-keygen -t rsa -f %s -N ""' % rsa_file)
-            cmds.append('cat %s.pub >> %s' % (rsa_file, keys_file))
-            cmds.append('chmod og-wx %s' % keys_file)
-            options = '-o UserKnownHostsFile=/dev/null ' + \
-                '-o StrictHostKeyChecking=no'
-            cmds.append('ssh %s localhost exit' % options)
-            temp_script_file = join(expanduser("~"),
-                                    '.temp_keygen_script_file.bash')
-            with open(temp_script_file, 'w') as OUT:
-                OUT.write("\n".join(cmds))
-            system('bash %s' % temp_script_file)
-            system('rm %s' % temp_script_file)
+            # rsa_file = join(ssh_dir, 'id_rsa')
+            # keys_file = join(ssh_dir, 'authorized_keys')
+            # cmds = ['rm -rf %s' % ssh_dir]
+            # if not isfile(rsa_file):
+            #     cmds.append('ssh-keygen -t rsa -f %s -N ""' % rsa_file)
+            # cmds.append('cat %s.pub >> %s' % (rsa_file, keys_file))
+            # cmds.append('chmod og-wx %s' % keys_file)
+            # options = '-o UserKnownHostsFile=/dev/null ' + \
+            #     '-o StrictHostKeyChecking=no'
+            # cmds.append('ssh %s localhost exit' % options)
+            # temp_script_file = join(expanduser("~"),
+            #                         '.temp_keygen_script_file.bash')
+            # with open(temp_script_file, 'w') as OUT:
+            #     OUT.write("\n".join(cmds))
+            # system('bash %s' % temp_script_file)
+            # system('rm %s' % temp_script_file)
         return True

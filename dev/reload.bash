@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pscheduler service stop
-rm -rf ~/.pscheduler ~/.ssh
+rm -rf ~/.pscheduler
 pip uninstall pscheduler -y
 pip install .
 pscheduler service start
