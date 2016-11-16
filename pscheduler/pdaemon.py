@@ -77,7 +77,7 @@ class pdaemon():
                     continue
                 jobinfo = json.load(open(runfn))
                 check_cmd = ['ssh', jobinfo['RUNHOST'], "ps x | grep %s" % pid]
-                err, out = self.launch_subprocess(check_cmd)
+                _, out = self.launch_subprocess(check_cmd)
                 complete = True
                 for l in out.split('\n'):
                     if l.rstrip('\n').split(' ')[0] == pid:

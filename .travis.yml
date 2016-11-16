@@ -4,7 +4,7 @@ python:
 install: 
   - pip install .
 script:
-  - coverage run pscheduler service start
-  - coverage run pscheduler hosts
-  - coverage run pscheduler jobs
-  - coverage run pscheduler sub "sleep 1"
+  - pscheduler service start
+  - pscheduler hosts
+  - pscheduler jobs
+  - pscheduler sub "sleep 1"
