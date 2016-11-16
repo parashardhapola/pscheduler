@@ -21,7 +21,7 @@ setup(
         'Topic :: System :: Distributed Computing',
         'Topic :: System :: Networking :: Monitoring'
     ],
-    install_requires=['psutil'],
+    install_requires=['psutil', 'terminaltables'],
     packages=find_packages(),
     include_package_data=True,
     scripts=['./scripts/batchSetupLoginKeys.py',

@@ -19,7 +19,7 @@ class pdaemon():
         self.run()
 
     def update_hosts(self):
-        return phosts.phosts(verbose=False).availableCores
+        return phosts.Phosts(verbose=False).availableCores
 
     def acquire_jobs(self):
         json_files = glob.glob("%s/*.json" % self.locations['PEND'])
@@ -32,8 +32,8 @@ class pdaemon():
     def submit_job(self, host, fn):
         jobinfo = json.load(open(fn), object_pairs_hook=OrderedDict)
         uid = fn.split('/')[-1].split('.')[0]
-
-        script = "#!/bin/bash\necho $$;\n%s\n" % jobinfo['CMD']
+        script = "#!/bin/bash\n\necho $$;\ncd %s;\n%s\n" % (
+            jobinfo['CWD'], jobinfo['CMD'])
         script_file = "%s/%s.bash" % (self.locations['SUBSCRIPTS'], uid)
         with open(script_file, 'w') as OUT:
             OUT.write(script)
@@ -44,7 +44,7 @@ class pdaemon():
         jobinfo['BEGTIME'] = self.get_timestamp()
         with open(runfn, 'w') as OUT:
             json.dump(jobinfo, OUT, indent=2)
-        os.system("rm %s" % fn)
+        os.system("rm %s" % fn)  # delete json in PEND
 
         logfn = "%s/%s.log" % (self.locations['RUN'], uid)
         sub = "ssh %s nohup %s </dev/null > %s 2>&1 &" % (
@@ -116,31 +116,29 @@ class pdaemon():
                 print ("%s: Updating hosts core info" %
                        self.get_timestamp(), flush=True)
                 hosts = self.update_hosts()
-                for host in hosts:
-                    if len(jobfiles) == 0:
-                        print ("%s: No outstanding jobs found." %
-                               self.get_timestamp())
-                        break
-                    cores = int(hosts[host])
-                    print ("%s: %s has %d free cores" %
-                           (self.get_timestamp(), host, cores), flush=True)
-                    # Check if enough cores available
-                    if cores / 1.5 > json.load(open(jobfiles[0]))['NUMPROC']:
-                        self.submit_job(host, jobfiles[0])
-                        if len(jobfiles) == 1:
-                            jobfiles = []
-                        else:
-                            # remove submitted job from queue
-                            jobfiles = jobfiles[1:]
+                submitted_jobs = []
+                for njob in range(len(jobfiles)):
+                    jobfile = jobfiles[njob]
+                    requested_cores = int(json.load(open(
+                        jobfile))['NUMPROC'])
+                    for host in hosts:
+                        cores = int(hosts[host])
+                        print ("%s: %s has %d free cores" %
+                               (self.get_timestamp(), host, cores), flush=True)
+                        if cores > requested_cores:
+                            self.submit_job(host, jobfile)
+                            submitted_jobs.append(njob)
+                            break
+                jobfiles = [jobfiles[x] for x in range(len(jobfiles))
+                            if x not in submitted_jobs]
+                print ("%s: %d outstanding jobs to be submitted." %
+                       (self.get_timestamp(), len(jobfiles)))
             self.clean_jobs()
             if len(jobfiles) == 0:
                 if deep_sleep_mode is False:
                     print ("%s: Sleeping" % self.get_timestamp(), flush=True)
-                else:
                     deep_sleep_mode = True
                 time.sleep(self.sleepTime)
-            else:  # deprioritize first job
-                jobfiles = jobfiles[1:] + jobfiles[:1]
         return None
 
 

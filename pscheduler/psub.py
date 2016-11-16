@@ -5,7 +5,7 @@ import json
 from collections import OrderedDict
 
 
-class psub():
+class Psub():
     def __init__(self, cmd, name, outloc, proc, job_dir):
         self.pendLoc = os.path.join(job_dir, 'PEND')
         uid = uuid.uuid1()

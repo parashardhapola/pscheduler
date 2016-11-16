@@ -2,32 +2,30 @@ from subprocess import Popen, PIPE
 import time
 from multiprocessing import Pool
 import os
+from terminaltables import AsciiTable
 
 
-class phosts():
+class Phosts():
     def __init__(self, verbose=True):
         pool = Pool(15)
 
         self.hostNames = sorted(self.get_host_names())
-        self.onlineHosts = []
         self.availableCores = {}
 
         if len(self.hostNames) > 0:
-            temp = pool.map(self.get_online_hosts, self.hostNames)
+            temp = pool.map(self.get_available_cores, self.hostNames)
             for i in range(len(temp)):
                 if temp[i][0] is True:
-                    self.onlineHosts.append(temp[i][1])
+                    self.availableCores[self.hostNames[i]] = temp[i][1]
                 else:
                     if verbose is True:
                         print (temp[i][1], flush=True)
-
-            temp = pool.map(self.get_available_cores, self.onlineHosts)
-            for i in range(len(temp)):
-                if temp[i][0] is True:
-                    self.availableCores[self.onlineHosts[i]] = temp[i][1]
-                else:
-                    if verbose is True:
-                        print (temp[i][1], flush=True)
+            if verbose is True:
+                table_data = [['Host\nname', '# available\n   cores']]
+                table_data.extend([[x, str(self.availableCores[x])]
+                                   for x in self.hostNames])
+                table = AsciiTable(table_data)
+                print (table.table)
         else:
             print ('No host found!', flush=True)
 
@@ -47,24 +45,15 @@ class phosts():
             print ('ERROR open hostfile %s' % hostfile, flush=True)
         return names
 
-    def get_online_hosts(self, host):
-        err, out = self.launch_subprocess([
-            'ssh', '-o', 'ConnectTimeout=1',
-                   '-o', 'StrictHostKeyChecking=no',
-                   host, 'exit'
-        ])
-        if err == '':
-            return True, host
-        else:
-            return False, "Host %s is not reachable" % host, err
-
     def get_available_cores(self, host):
         checkcpu_script = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), 'checkCPUusage.py')
         err, out = self.launch_subprocess([
-            'ssh', host, 'python', checkcpu_script
+            'ssh', '-o', 'ConnectTimeout=1',
+                   '-o', 'StrictHostKeyChecking=no',
+                   host, 'python', checkcpu_script
         ])
         if err == '':
             return True, out.rstrip('\n')
         else:
-            return False, "open cores query failed for host %s" % host, err
+            return False, "Host %s is not reachable" % host, err
