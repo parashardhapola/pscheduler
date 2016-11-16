@@ -23,7 +23,8 @@ class Phosts():
             if verbose is True:
                 table_data = [['Host\nname', '# available\n   cores']]
                 table_data.extend([[x, str(self.availableCores[x])]
-                                   for x in self.hostNames])
+                                   for x in self.hostNames
+                                   if x in self.availableCores])
                 table = AsciiTable(table_data)
                 print (table.table)
         else:
@@ -49,7 +50,7 @@ class Phosts():
         checkcpu_script = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), 'checkCPUusage.py')
         err, out = self.launch_subprocess([
-            'ssh', '-o', 'ConnectTimeout=1',
+            'ssh', '-o', 'ConnectTimeout=3',
                    '-o', 'StrictHostKeyChecking=no',
                    host, 'python', checkcpu_script
         ])

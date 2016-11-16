@@ -107,5 +107,15 @@ NOTE: Ensure that job string is within quotes
             return False
         host_file = join(home_dir, 'hosts.cfg')
         if not isfile(host_file):
-            open(join(home_dir, 'hosts.cfg'), 'w').close()
+            with open(join(home_dir, 'hosts.cfg'), 'w') as OUT:
+                OUT.write('localhost')
+            ssh_dir = join(expanduser("~"), '.ssh')
+            if not isdir(ssh_dir):
+                makedirs(ssh_dir)
+            rsa_file = join(ssh_dir, 'id_rsa')
+            keys_file = join(ssh_dir, 'authorized_keys')
+            if not isfile(rsa_file):
+                system('ssh-keygen -t rsa -f %s -N ""' % rsa_file)
+            system('cat %s >> %s' % (rsa_file, keys_file))
+            system('chmod og-wx %s' % keys_file)
         return True
