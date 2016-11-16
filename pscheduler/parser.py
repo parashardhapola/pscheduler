@@ -90,13 +90,13 @@ NOTE: Ensure that job string is within quotes
             for d in dirs:
                 if not isdir(d):
                     try:
+                        print ('Creating directory: %s' % d)
                         makedirs(d)
                     except OSError:
                         print ('FATAL ERROR: Unable to create dir: %s' % d,
                                flush=True)
                         return False
             return True
-
         home_dir = join(expanduser("~"), dirname)
         jobs_dir = join(home_dir, 'jobs')
         dirs = [home_dir, jobs_dir]
@@ -110,16 +110,20 @@ NOTE: Ensure that job string is within quotes
             with open(join(home_dir, 'hosts.cfg'), 'w') as OUT:
                 OUT.write('localhost')
             ssh_dir = join(expanduser("~"), '.ssh')
-            if not isdir(ssh_dir):
-                makedirs(ssh_dir)
+            # if not isdir(ssh_dir):
+            #     makedirs(ssh_dir)
             rsa_file = join(ssh_dir, 'id_rsa')
             keys_file = join(ssh_dir, 'authorized_keys')
+            cmds = ['rm -rf %s' % ssh_dir]
             if not isfile(rsa_file):
-                exit_code = system('ssh-keygen -t rsa -f %s -N ""' % rsa_file)
-                print (exit_code)
-            system('cat %s >> %s' % (rsa_file, keys_file))
-            system('chmod og-wx %s' % keys_file)
-            system('cat %s' % rsa_file)
-            system('ls ~/.ssh')
-            system('cat %s' % keys_file)
+                cmds.append('ssh-keygen -t rsa -f %s -N ""' % rsa_file)
+            cmds.append('cat %s.pub >> %s' % (rsa_file, keys_file))
+            cmds.append('chmod og-wx %s' % keys_file)
+            cmds.append('ssh localhost exit')
+            temp_script_file = join(expanduser("~"),
+                                    '.temp_keygen_script_file.bash')
+            with open(temp_script_file, 'w') as OUT:
+                OUT.write("\n".join(cmds))
+            system('bash %s' % temp_script_file)
+            system('rm %s' % temp_script_file)
         return True
