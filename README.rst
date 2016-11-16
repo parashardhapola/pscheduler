@@ -101,7 +101,8 @@ HISTORY
     * default host fixed to localhost. passwordless loging into localhost created
     * DEV: Travis CI now being used for testing
 * 0.1.0:
-	* Rolledback SSH keygen
+    * pdaemon fix
+    * Rolledback SSH keygen
 
 
 Contributors

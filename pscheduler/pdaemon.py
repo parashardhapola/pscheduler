@@ -128,6 +128,7 @@ class pdaemon():
                         if cores > requested_cores:
                             self.submit_job(host, jobfile)
                             submitted_jobs.append(njob)
+                            hosts[host] = hosts[host] - requested_cores
                             break
                 jobfiles = [jobfiles[x] for x in range(len(jobfiles))
                             if x not in submitted_jobs]

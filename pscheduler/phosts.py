@@ -52,6 +52,7 @@ class Phosts():
         err, out = self.launch_subprocess([
             'ssh', '-o', 'ConnectTimeout=3',
                    '-o', 'StrictHostKeyChecking=no',
+                   '-o', 'BatchMode=yes',
                    host, 'python', checkcpu_script
         ])
         if err == '':
