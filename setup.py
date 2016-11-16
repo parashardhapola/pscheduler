@@ -9,7 +9,7 @@ def read(fname):
 if __name__ == "__main__":
 
     CLASSIFIERS = [
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Operating System :: POSIX :: Linux",
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     git_loc = 'https://github.com/parashardhapola/pscheduler'
     setup(
         name='pscheduler',
-        version=read('VERSION'),
+        version=read('VERSION').rstrip('\n'),
         description=('A pure Python remote job scheduler system'),
         long_description=read('README.rst'),
         author='Parashar Dhapola',
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         maintainer='Parashar Dhapola',
         maintainer_email='parashar.dhapola@gmail.com',
         url=git_loc,
-        download_url='%s/tarball/%s' % (git_loc, read('VERSION')),
+        download_url='%s/tarball/%s' % (git_loc, read('VERSION').rstrip('\n')),
         license="MIT",
         classifiers=CLASSIFIERS,
         keywords=KEYWORDS,
