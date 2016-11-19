@@ -2,7 +2,6 @@ import os
 import datetime
 import uuid
 import json
-from collections import OrderedDict
 
 
 class Psub():
@@ -13,14 +12,18 @@ class Psub():
             name = str(uid)
         if outloc is None:
             outloc = os.path.join(job_dir, 'FINISH')
-        pend_dict = OrderedDict({
+        pend_dict = {
             'SUBTIME': self.get_timestamp(),
             'CWD': os.getcwd(),
             'NAME': name,
             'OUTLOC': outloc,
             'NUMPROC': proc,
             'CMD': cmd,
-        })
+            'RUNHOST': [],
+            'BEGTIME': '',
+            'OUTPUT': '',
+            'FINTIME': ''
+        }
         with open("%s/%s.json" % (self.pendLoc, uid), 'w') as OUT:
             json.dump(pend_dict, OUT, indent=2)
 
