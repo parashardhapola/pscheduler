@@ -29,7 +29,7 @@ class Job():
 
         self.runFile = None
         self.scriptFile = None
-        self.logFile = self.None
+        self.logFile = None
 
     def get_requested_cores(self):
         print ("%s: %d cores have been requested by the job" %
@@ -229,14 +229,14 @@ class Pdaemon():
         cores = map(int, hosts_cores_dict.values())
         if len(cores) > 0:
             print ("%s: Total %d available cores found!" %
-                   (self.get_timestamp(), sum(cores)), flush=True)
+                   (get_timestamp(), sum(cores)), flush=True)
         return hosts_cores_dict
 
     def acquire_jobs(self):
         json_files = glob.glob("%s/*.json" % self.locations['PEND'])
         if len(json_files) > 0:
             print ("%s: %d job files found" % (
-                self.get_timestamp(), len(jobfiles)), flush=True)
+                get_timestamp(), len(jobfiles)), flush=True)
         jobs = []
         for fn in json_files:
             jobs.append(Job(fn, self.locations))  # <- instantiating Job class
@@ -249,7 +249,7 @@ class Pdaemon():
                 continue
             if cores > requested_cores + 1:
                 print ("%s: Submitting to %s: has %d free cores" %
-                       (self.get_timestamp(), host, cores), flush=True)
+                       (get_timestamp(), host, cores), flush=True)
                 return host
         return False
 
@@ -272,9 +272,9 @@ class Pdaemon():
         for i in range(len(self.jobsList)):
             check_status = self.jobsList[i].check_status()  # <- Jobs method
             if check_status is True:
-                self.jobsList[i].clean():  # <- Jobs method
-                    # Create outfile error silent but logged
-                    clean_index.append(i)
+                self.jobsList[i].clean()  # <- Jobs method
+                # Create outfile error silent but logged
+                clean_index.append(i)
             elif check_status is False:  # Could also be None which is no probs
                 self.jobsList[i].rollback()
                 clean_index.append(i)
@@ -282,7 +282,7 @@ class Pdaemon():
                 if i not in clean_index]
 
     def run(self):
-        print ("%s: --------DAEMON STARTED--------" % self.get_timestamp(),
+        print ("%s: --------DAEMON STARTED--------" % get_timestamp(),
                flush=True)
         while True:
             self.jobsList.extend(self.submit_jobs())
